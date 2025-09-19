@@ -201,14 +201,6 @@ Ensure Python is properly installed and accessible from the command line. Recrea
 **Server Startup Failures**
 Check for port conflicts if the server fails to start on port 8000. Use netstat commands to identify processes using the target port. Verify all requirements are installed in the active virtual environment.
 
-**Dashboard Loading Issues**
-Confirm the backend API server is running before accessing the dashboard. Check browser console for JavaScript errors and verify the API_BASE_URL configuration matches your server deployment.
-
-## Database settings
-
-
-
-Application performance improves through caching strategies for analytics calculations and efficient query design patterns. Consider implementing Redis for session caching in high-traffic scenarios.
 
 ## Security Considerations
 
