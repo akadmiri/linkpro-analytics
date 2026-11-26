@@ -1,8 +1,7 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import func, text, and_, distinct
+from sqlalchemy import and_, func
 from datetime import datetime, timedelta
-from typing import List, Dict, Optional
-import re
+from typing import List, Optional
 
 from database.models import ClickEvent, PageView, Link, LinkProfile
 from models.analytics import (
@@ -198,23 +197,6 @@ class AnalyticsService:
             end_date = datetime.now()
         if not start_date:
             start_date = end_date - timedelta(days=30)
-        
-        # Build queries
-        click_query = self.db.query(ClickEvent).filter(
-            and_(
-                ClickEvent.profile_id == profile_id,
-                ClickEvent.clicked_at >= start_date,
-                ClickEvent.clicked_at <= end_date
-            )
-        )
-        
-        view_query = self.db.query(PageView).filter(
-            and_(
-                PageView.profile_id == profile_id,
-                PageView.viewed_at >= start_date,
-                PageView.viewed_at <= end_date
-            )
-        )
         
         if granularity == 'hourly':
             # Group by hour

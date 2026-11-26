@@ -22,6 +22,7 @@ wheels/
 MANIFEST
 
 # Virtual Environment
+.venv/
 venv/
 env/
 ENV/
@@ -30,7 +31,9 @@ venv.bak/
 
 # Environment variables
 .env
+.env.*
 *.env
+!.env.example
 
 # IDE
 .vscode/
@@ -55,8 +58,6 @@ logs/
 # Database
 *.db
 *.sqlite3
-database/
-*.db
 
 # Node.js
 node_modules/
@@ -65,18 +66,15 @@ yarn-debug.log*
 yarn-error.log*
 
 # Temporary and generated files
-tests/
-test_analytics.py
-test_db.py
-test_database_connection.py
-start_server.bat
-generate_data.bat
-open_docs.bat
+.ipynb_checkpoints/
+.pytest_cache/
+.ruff_cache/
+recommendation_system/*.pkl
+recommendation_system/system_config.json
+recommendation_system/deployment_report.txt
 generated_data/
 *.csv
 *.parquet
 dataset_summary.json
 temp_data/
 synthetic_data/
-
-

@@ -1,11 +1,10 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
 from datetime import datetime
 import sys
 
 # Import our database and models
-from database.connection import get_db, test_connection, engine, Base
+from database.connection import Base, engine, test_connection
 from routes.tracking import router as tracking_router
 
 # Create analytics routes
@@ -25,7 +24,7 @@ app = FastAPI(
 # Enable CORS for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, specify exact origins
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -81,14 +80,14 @@ async def system_info():
 if __name__ == "__main__":
     print("Starting LinkPro Analytics API...")
     print(f"Running on Python {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}")
-    print("Visit http://localhost:8000/docs for interactive API documentation")
+    print("Visit http://127.0.0.1:8000/docs for interactive API documentation")
     print("New Features Added:")
     print("- Profile Analytics: /api/analytics/profile/{profile_id}")
     print("- Traffic Analytics: /api/analytics/traffic/{profile_id}")
     print("- Time Analytics: /api/analytics/time/{profile_id}")
     print("- Quick Stats: /api/analytics/quick-stats/{profile_id}")
     print("- Period Comparison: /api/analytics/compare/{profile_id}")
-    print("Use 'uvicorn src.main:app --reload' for development with hot reload")
+    print("See docs/SETUP.md for local setup instructions")
     
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8000)

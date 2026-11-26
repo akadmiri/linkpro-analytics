@@ -1,7 +1,7 @@
 // LinkPro Analytics Dashboard JavaScript - Enhanced with linkpro.ma styling
 
 // Configuration
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = document.querySelector('meta[name="analytics-api-url"]').content;
 let profileId = 1;
 let refreshInterval = null;
 let trafficChart = null;
@@ -554,11 +554,15 @@ async function updateLinksTable(profileData) {
             return;
         }
         
+        const topLink = profileData.links_analytics.reduce((best, link) =>
+            link.metrics.total_clicks > best.metrics.total_clicks ? link : best
+        );
+
         profileData.links_analytics.forEach((link, index) => {
             const row = document.createElement('tr');
             row.className = 'hover:bg-gray-50 transition-all duration-200';
             
-            const isTopPerformer = index === 0;
+            const isTopPerformer = link === topLink && link.metrics.total_clicks > 0;
             const trendLabel = isTopPerformer ? 'Top Performer' : 'Active';
             const badgeClass = isTopPerformer ? 'badge-top' : 'badge-active';
             
@@ -572,7 +576,7 @@ async function updateLinksTable(profileData) {
                     <div class="text-sm title text-blue-custom">${escapeHtml(link.title)}</div>
                     <div class="text-xs text text-gray-500 mt-1">
                         <i class="fas fa-link mr-1"></i>
-                        ${link.url.length > 40 ? link.url.substring(0, 40) + '...' : link.url}
+                        ${escapeHtml(link.url.length > 40 ? link.url.substring(0, 40) + '...' : link.url)}
                     </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
@@ -620,8 +624,7 @@ function updateRecommendations(timeData) {
         let recommendationText;
         
         if (timeData.best_time_recommendation) {
-            recommendationText = timeData.best_time_recommendation + 
-                '. Consider scheduling your content during peak engagement times for maximum visibility.';
+            recommendationText = timeData.best_time_recommendation + '. Based on recorded clicks.';
         } else {
             recommendationText = 'Keep tracking your analytics to discover optimal posting times and improve engagement.';
         }
@@ -651,18 +654,6 @@ function typewriterEffect(element, text, speed = 50) {
 }
 
 // Enhanced Utility Functions
-function updateElement(id, value) {
-    const element = document.getElementById(id);
-    if (element) {
-        // Add a subtle animation when updating
-        element.style.transform = 'scale(1.05)';
-        element.textContent = value;
-        setTimeout(() => {
-            element.style.transform = 'scale(1)';
-        }, 150);
-    }
-}
-
 function showLoading(show) {
     const indicator = document.getElementById('loadingIndicator');
     if (indicator) {
@@ -756,7 +747,7 @@ function escapeHtml(text) {
 
 function getErrorMessage(error) {
     if (error.message.includes('fetch')) {
-        return 'Cannot connect to analytics API. Please ensure the server is running on http://localhost:8000';
+        return `Cannot connect to analytics API at ${API_BASE_URL}.`;
     }
     if (error.message.includes('404')) {
         return 'Analytics endpoint not found. Please check your API configuration.';

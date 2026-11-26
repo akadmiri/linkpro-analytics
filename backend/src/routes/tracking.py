@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
-from datetime import datetime
 from typing import Optional
 
 from database.connection import get_db
@@ -52,7 +51,7 @@ async def track_click_event(
         )
         
         # Save to database
-        db_click = ClickEvent(**click_data.dict())
+        db_click = ClickEvent(**click_data.model_dump())
         db.add(db_click)
         db.commit()
         db.refresh(db_click)
@@ -93,7 +92,7 @@ async def track_page_view(
         )
         
         # Save to database
-        db_view = PageView(**view_data.dict())
+        db_view = PageView(**view_data.model_dump())
         db.add(db_view)
         db.commit()
         db.refresh(db_view)
@@ -121,7 +120,7 @@ async def get_link_clicks(
     return {
         "link_id": link_id,
         "total_clicks": len(clicks),
-        "clicks": [ClickEventResponse.from_orm(click) for click in clicks]
+        "clicks": [ClickEventResponse.model_validate(click) for click in clicks]
     }
 
 @router.get("/views/{profile_id}")
@@ -134,5 +133,5 @@ async def get_profile_views(
     return {
         "profile_id": profile_id,
         "total_views": len(views),
-        "views": [PageViewResponse.from_orm(view) for view in views]
+        "views": [PageViewResponse.model_validate(view) for view in views]
     }

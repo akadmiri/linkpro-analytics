@@ -1,4 +1,4 @@
-from pydantic import BaseModel, validator # type: ignore
+from pydantic import BaseModel, ConfigDict, field_validator
 from datetime import datetime
 from typing import Optional
 import ipaddress
@@ -11,7 +11,8 @@ class ClickEventBase(BaseModel):
     referrer: Optional[str] = None
 
 class ClickEventCreate(ClickEventBase):
-    @validator('ip_address')
+    @field_validator('ip_address')
+    @classmethod
     def validate_ip_address(cls, v):
         if v is not None:
             try:
@@ -20,13 +21,15 @@ class ClickEventCreate(ClickEventBase):
                 raise ValueError('Invalid IP address format')
         return v
     
-    @validator('user_agent')
+    @field_validator('user_agent')
+    @classmethod
     def validate_user_agent(cls, v):
         if v is not None and len(v) > 1000:
             return v[:1000]  # Truncate long user agents
         return v
     
-    @validator('referrer')
+    @field_validator('referrer')
+    @classmethod
     def validate_referrer(cls, v):
         if v is not None and len(v) > 1000:
             return v[:1000]  # Truncate long referrers
@@ -36,8 +39,7 @@ class ClickEventResponse(ClickEventBase):
     id: int
     clicked_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class PageViewBase(BaseModel):
     profile_id: int
@@ -46,7 +48,8 @@ class PageViewBase(BaseModel):
     referrer: Optional[str] = None
 
 class PageViewCreate(PageViewBase):
-    @validator('ip_address')
+    @field_validator('ip_address')
+    @classmethod
     def validate_ip_address(cls, v):
         if v is not None:
             try:
@@ -59,8 +62,7 @@ class PageViewResponse(PageViewBase):
     id: int
     viewed_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class TrackingResponse(BaseModel):
     status: str

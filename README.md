@@ -1,90 +1,25 @@
 # LinkPro Analytics
 
-A project for tracking clicks and page views on link profiles.
+LinkPro Analytics is my 2025 data science engineering internship project. I built a tool for tracking clicks and page views on link profiles and exploring which links, traffic sources, and posting times received the most engagement.
 
-## Project Overview
+## What I built
 
-The API records click and page-view events. The dashboard fetches the event summaries.
+| Component | Implementation |
+| --- | --- |
+| Tracking and storage | FastAPI endpoints record and retrieve click and page-view events. SQLAlchemy maps profiles, links, and events to PostgreSQL. Pydantic validates inputs and structures API responses. |
+| Analytics and dashboard | The API calculates profile and link metrics, classifies referrers, groups events by hour or day, and compares periods. The HTML, CSS, and JavaScript dashboard uses Chart.js and Tailwind CSS to show seven-day KPIs, traffic sources, daily trends, link performance, and the weekday with the most recorded clicks. It refreshes every 30 seconds. |
+| Offline analysis and recommendations | The Jupyter notebook extracts events from PostgreSQL and uses pandas, NumPy, SciPy, Matplotlib, seaborn, and scikit-learn for exploratory analysis, statistical tests, feature engineering, model comparison, and posting-slot recommendations. |
 
-The project uses FastAPI, PostgreSQL, and a JavaScript dashboard.
+The dashboard calls the FastAPI REST endpoints, which query PostgreSQL. The notebook reads the same schema independently. The dashboard's posting suggestion comes from historical click counts.
 
-## Core Features
+## Dashboard
 
-**Event Tracking System**
-Record clicks and page views with IP addresses, user agents, and referrers.
+The demo uses synthetic events for one profile. Follow the [local setup guide](docs/SETUP.md) to run the API and dashboard on Windows, macOS, or Linux and load the demo data.
 
-**Analytics Engine** 
-Compare event counts and click-through rates by time, referrer, and period.
+![Dashboard showing synthetic KPIs, traffic sources, daily performance, and two link rows](docs/dashboard.webp)
 
-**Interactive Dashboard**
-Chart.js displays metrics returned by the API.
+## Notebook results
 
-**Machine Learning Integration**
-Use the notebook to explore events and compare posting-time models.
+The notebook contains saved aggregate plots for engagement by time and traffic source, feature importance, model comparisons, and example recommendation scores. The analysis uses a chronological 80/20 train/test split. In the saved run, the selected Lasso model had a test R² of -0.0001, and the selected logistic regression model had a test ROC AUC of 0.5096. These scores indicate limited predictive signal in that run. The original dataset and exported models are unavailable in this checkout. [View the notebook and plots](recommendation_system/RecommendationSystem.ipynb)
 
-## Architecture
-
-The dashboard calls the FastAPI server, which queries PostgreSQL through SQLAlchemy.
-
-PostgreSQL stores profiles, links, and events.
-
-The dashboard fetches metrics through REST endpoints.
-
-## Technology Stack
-
-**Backend Services**
-- FastAPI for asynchronous request handling and automatic API documentation
-- SQLAlchemy for mapping Python models to PostgreSQL.
-- PostgreSQL for profile, link, and event storage.
-- Pydantic for data validation and response serialization
-
-**Frontend Interface**
-- HTML5 and modern CSS3 with Tailwind framework for responsive design
-- JavaScript ES6+ for interactive functionality and API integration
-- Chart.js for professional data visualization and analytics presentation
-
-**Development Environment**
-- Python 3.13.7 used during development.
-- Virtual environment isolation for dependency management
-- Environment-based configuration supporting multiple deployment scenarios
-
-## API Endpoints
-
-The API records events and returns analytics as JSON.
-
-Primary tracking functions include click event logging and page view recording with automatic metadata capture. Analytics functions provide profile performance summaries, traffic source analysis, temporal pattern identification, and comparative period analysis.
-
-Interactive API documentation is available through the automatic Swagger interface, enabling immediate testing and integration development.
-
-## Data Models
-
-The database schema centers around user profiles containing multiple tracked links with associated event histories. Click events and page views maintain complete context information for detailed analysis and reporting.
-
-Response models define the fields returned for profile, traffic, and time analytics.
-
-## Machine Learning Pipeline
-
-The notebook explores event patterns, tests group differences, and compares models.
-
-The notebook ranks posting slots using time, traffic source, and model scores.
-
-## Development Standards
-
-Use a local database and keep its credentials outside Git.
-
-The testing framework validates core functionality across tracking accuracy, analytics calculations, and API response consistency through automated validation procedures.
-
-## Requirements
-
-- Windows 10/11 operating system
-- Python 3.13.7 with pip 25.2 package manager
-- PostgreSQL 17.6 database server
-- Modern web browser supporting ES6+ JavaScript features
-
-## Getting Started
-
-Detailed installation procedures and configuration instructions are provided in the SETUP.md documentation. The setup process includes database initialization, virtual environment configuration, and sample data generation for immediate testing.
-
-Use the API health endpoint and tracking routes to check local setup.
-
-## Project Goals
+The API is intended for local evaluation. Its tracking routes store IP addresses, user agents, and referrers, and the API has no authentication. Use synthetic or otherwise approved data.

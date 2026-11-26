@@ -1,13 +1,14 @@
-from pydantic import BaseModel, validator # type: ignore
+from pydantic import BaseModel, ConfigDict, field_validator
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional
 
 class UserBase(BaseModel):
     username: str
     title: Optional[str] = None
 
 class UserCreate(UserBase):
-    @validator('username')
+    @field_validator('username')
+    @classmethod
     def validate_username(cls, v):
         if len(v) < 3:
             raise ValueError('Username must be at least 3 characters')
@@ -27,8 +28,7 @@ class UserResponse(UserBase):
     total_clicks: Optional[int] = 0
     total_views: Optional[int] = 0
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class UserStats(BaseModel):
     user_id: int

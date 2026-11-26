@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import List, Optional, Dict, Any
+from typing import List, Optional
 
 class BasicMetrics(BaseModel):
     """Basic analytics metrics for a profile or link"""
@@ -69,4 +69,4 @@ class AnalyticsQuery(BaseModel):
     period: Optional[AnalyticsPeriod] = None
     include_traffic_sources: bool = True
     include_time_analysis: bool = True
-    granularity: str = 'daily'  
+    granularity: str = 'daily'

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, validator, HttpUrl # type: ignore
+from pydantic import BaseModel, ConfigDict, field_validator
 from datetime import datetime
 from typing import Optional
 
@@ -10,7 +10,8 @@ class LinkBase(BaseModel):
 class LinkCreate(LinkBase):
     profile_id: int
     
-    @validator('title')
+    @field_validator('title')
+    @classmethod
     def validate_title(cls, v):
         if len(v) < 1:
             raise ValueError('Title cannot be empty')
@@ -18,7 +19,8 @@ class LinkCreate(LinkBase):
             raise ValueError('Title must be less than 100 characters')
         return v.strip()
     
-    @validator('url')
+    @field_validator('url')
+    @classmethod
     def validate_url(cls, v):
         if not v.startswith(('http://', 'https://')):
             v = 'https://' + v
@@ -29,7 +31,8 @@ class LinkUpdate(BaseModel):
     url: Optional[str] = None
     position: Optional[int] = None
     
-    @validator('title')
+    @field_validator('title')
+    @classmethod
     def validate_title(cls, v):
         if v is not None:
             if len(v) < 1:
@@ -39,7 +42,8 @@ class LinkUpdate(BaseModel):
             return v.strip()
         return v
     
-    @validator('url')
+    @field_validator('url')
+    @classmethod
     def validate_url(cls, v):
         if v is not None:
             if not v.startswith(('http://', 'https://')):
@@ -52,8 +56,7 @@ class LinkResponse(LinkBase):
     created_at: datetime
     click_count: Optional[int] = 0
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class LinkStats(BaseModel):
     link_id: int
