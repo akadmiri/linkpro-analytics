@@ -1,25 +1,26 @@
 # LinkPro Analytics
 
-LinkPro Analytics is my 2025 data science engineering internship project. I built a tool for tracking clicks and page views on link profiles and exploring which links, traffic sources, and posting times received the most engagement.
+I built LinkPro Analytics during my 2025 internship as a data science engineering student. The project records clicks and page views on link profiles and explores how engagement varies by link, traffic source, and time.
 
-## What I built
+## Application
 
-| Component | Implementation |
-| --- | --- |
-| Tracking and storage | FastAPI endpoints record and retrieve click and page-view events. Click tracking requires the link to belong to the supplied profile. SQLAlchemy maps profiles, links, and events to PostgreSQL. Pydantic validates inputs and structures API responses. |
-| Analytics and dashboard | The API calculates profile and link metrics, classifies referrers, groups events by hour or day, and compares periods. The HTML, CSS, and JavaScript dashboard uses Chart.js and Tailwind CSS to show seven-day KPIs, traffic sources, daily trends, link performance, and the weekday with the most recorded clicks. It refreshes every 30 seconds. |
-| Offline analysis and recommendations | The Jupyter notebook extracts events from PostgreSQL and uses pandas, NumPy, SciPy, Matplotlib, seaborn, and scikit-learn for exploratory analysis, statistical tests, feature engineering, model comparison, and posting-slot recommendations. |
+FastAPI records events and queries PostgreSQL through SQLAlchemy. The dashboard uses JavaScript, Chart.js, and Tailwind CSS to display seven-day totals, period comparisons, traffic sources, and link performance. It fetches fresh data every 30 seconds. Its posting suggestion shows the weekday with the most recorded clicks in the time series.
 
-The dashboard calls the FastAPI REST endpoints, which query PostgreSQL. The notebook reads the same schema independently. The dashboard's posting suggestion comes from historical click counts.
+The screenshot shows the dashboard with synthetic events. The setup guide covers Python 3.12, PostgreSQL, the demo data, and the notebook. [Local setup](docs/SETUP.md)
 
-## Dashboard
+![Dashboard showing synthetic click and view totals, traffic sources, and link performance](docs/dashboard.webp)
 
-The demo uses synthetic events for one profile. Follow the [local setup guide](docs/SETUP.md) to run the API and dashboard on Windows, macOS, or Linux and load the demo data.
+## Posting-time analysis
 
-![Dashboard showing synthetic KPIs, traffic sources, daily performance, and two link rows](docs/dashboard.webp)
+I used a Jupyter notebook to explore clicks and views, run statistical tests, and compare regression and classification models. The notebook uses an 80/20 chronological train/test split and ranks candidate posting times using model scores and rules based on the exploratory analysis.
 
-## Notebook results
+In the saved run, Lasso had a test R² of −0.0001 and logistic regression had a test ROC AUC of 0.5096. The models showed limited predictive signal on that test set. The notebook keeps the aggregate figures and results. The original event data and trained models are excluded. [Notebook and figures](recommendation_system/RecommendationSystem.ipynb)
 
-The notebook contains saved aggregate plots for engagement by time and traffic source, feature importance, model comparisons, and example recommendation scores. The analysis uses a chronological 80/20 train/test split. In the saved run, the selected Lasso model had a test R² of -0.0001, and the selected logistic regression model had a test ROC AUC of 0.5096. These scores indicate limited predictive signal in that run. The original dataset and exported models are unavailable in this checkout. [View the notebook and plots](recommendation_system/RecommendationSystem.ipynb)
+## Repository structure
 
-The API is intended for local evaluation. Browser access defaults to the dashboard origins in the setup guide. The API has no authentication, and tracking routes store IP addresses, user agents, and referrers. Use synthetic or otherwise approved data.
+- `backend/` contains the API, database models, and analytics queries.
+- `frontend/` contains the dashboard.
+- `recommendation_system/` contains the analysis notebook and its dependencies.
+- `docs/` contains setup instructions, synthetic sample data, and the dashboard screenshot.
+
+The API runs locally and has no authentication. Tracking records IP addresses, user agents, and referrers, so use synthetic or approved data.

@@ -8,11 +8,9 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-# Import our database and models
 from database.connection import Base, engine, test_connection
 from routes.tracking import router as tracking_router
 
-# Create analytics routes
 from routes.analytics import router as analytics_router
 
 logger = logging.getLogger(__name__)
@@ -26,13 +24,11 @@ cors_origins = [
 if "*" in cors_origins:
     raise ValueError("CORS_ORIGINS must list explicit origins")
 
-# Create all database tables
 Base.metadata.create_all(bind=engine)
 
-# Create FastAPI app
 app = FastAPI(
     title="LinkPro Analytics API",
-    description="Analytics dashboard for LinkPro - Track clicks, views, and user behavior",
+    description="Record clicks and page views and query profile analytics.",
     version="1.0.0",
     docs_url="/docs"
 )
@@ -61,11 +57,9 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
 )
 
-# Include routers
 app.include_router(tracking_router)
 app.include_router(analytics_router)
 
-# Basic routes
 @app.get("/")
 async def root():
     return {
@@ -75,16 +69,15 @@ async def root():
         "docs": "Visit /docs for interactive API documentation",
         "features": {
             "tracking": "Click and page view tracking",
-            "analytics": "Comprehensive analytics and insights",
-            "traffic_analysis": "Traffic source detection and analysis",
-            "time_analysis": "Time-based performance insights"
+            "analytics": "Profile and link metrics",
+            "traffic_analysis": "Traffic sources grouped by referrer",
+            "time_analysis": "Hourly and daily trends"
         }
     }
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint with database connectivity test"""
-    # Test database connection
+    """Check whether PostgreSQL is reachable."""
     db_connected, db_info = test_connection()
     
     return {
@@ -98,7 +91,7 @@ async def health_check():
 
 @app.get("/api/system/info")
 async def system_info():
-    """Get system information"""
+    """Return the Python and API versions."""
     return {
         "python_version": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
         "python_implementation": sys.implementation.name,
@@ -107,18 +100,10 @@ async def system_info():
         "environment": "development"
     }
 
-# Only run with uvicorn if called directly (for development)
 if __name__ == "__main__":
     print("Starting LinkPro Analytics API...")
     print(f"Running on Python {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}")
     print("Visit http://127.0.0.1:8000/docs for interactive API documentation")
-    print("New Features Added:")
-    print("- Profile Analytics: /api/analytics/profile/{profile_id}")
-    print("- Traffic Analytics: /api/analytics/traffic/{profile_id}")
-    print("- Time Analytics: /api/analytics/time/{profile_id}")
-    print("- Quick Stats: /api/analytics/quick-stats/{profile_id}")
-    print("- Period Comparison: /api/analytics/compare/{profile_id}")
-    print("See docs/SETUP.md for local setup instructions")
-    
+
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8000)

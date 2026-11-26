@@ -1,6 +1,6 @@
 # Local setup
 
-Use Python 3.12, Git, and a running PostgreSQL server with the `psql` client on your PATH. The dashboard loads Chart.js, Tailwind CSS, Font Awesome, and Poppins from public CDNs, so the browser needs internet access for the charts and full styling.
+Use Python 3.12, Git, and a running PostgreSQL server with the `psql` client on your PATH. The browser needs internet access to load the dashboard libraries and fonts.
 
 ## Clone and install
 
@@ -63,7 +63,7 @@ python -m http.server 8080 --bind 127.0.0.1 --directory frontend
 - Open the [interactive API documentation](http://127.0.0.1:8000/docs) to try the tracking and analytics endpoints.
 - Open the [dashboard](http://127.0.0.1:8080/). If you use a different API URL, update the `analytics-api-url` meta tag in [frontend/index.html](../frontend/index.html).
 
-The API allows browser requests from `http://127.0.0.1:8080` and `http://localhost:8080` by default. If you serve the dashboard from another origin, set `CORS_ORIGINS` in the root `.env` to a comma-separated list of allowed origins and restart the API. This replaces the default list. Include each scheme, host, and port without a path or trailing slash. For example, use `CORS_ORIGINS=http://127.0.0.1:8081,http://localhost:8081` for port 8081.
+The API allows browser requests from `http://127.0.0.1:8080` and `http://localhost:8080` by default. If you serve the dashboard from another origin, set `CORS_ORIGINS` in the root `.env` to a comma-separated list of allowed origins and restart the API. This replaces the default list. Use each full origin, such as `http://localhost:8081`. Leave out paths and trailing slashes. For example, use `CORS_ORIGINS=http://127.0.0.1:8081,http://localhost:8081` for port 8081.
 
 ## Load demo data
 
@@ -73,9 +73,9 @@ After the first API startup, run the following in a third terminal. Enter the da
 psql -h localhost -p 5432 -U linkpro_user -d linkpro_analytics -v ON_ERROR_STOP=1 -f docs/demo-data.sql
 ```
 
-The script prints the synthetic profile ID, normally `1` on a fresh database. Select that ID in the dashboard. The script timestamps the events when first loaded and can be run again without duplicating them. The dashboard ships with selector options 1–13. If your profile ID is outside that range, update the options in `frontend/index.html`. Refresh to see the KPIs, traffic chart, daily time series, and two link rows. You can also use Swagger UI to record a click or page view for the seeded profile.
+Select the demo profile ID printed by the script, usually `1` on an empty database. The seed uses timestamps relative to the first load and can be run again without duplicating events. For IDs outside 1–13, add the ID to the selector in `frontend/index.html`. Use the API docs to record new clicks and views.
 
-The seed is for dashboard evaluation. The notebook needs a larger dataset with clicks and views across multiple time slots and traffic sources for the statistical tests and model fitting.
+The demo seed is sized for the dashboard. For the notebook, use a larger dataset with clicks and views across several time slots and traffic sources.
 
 For click tracking, use a link ID that belongs to the selected profile. The API returns HTTP 404 for an unavailable link/profile pair and HTTP 500 with a generic message for unexpected failures. Check the API process logs for those failures.
 

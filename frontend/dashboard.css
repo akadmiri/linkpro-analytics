@@ -1,4 +1,3 @@
-
 * {
     font-family: 'Poppins', sans-serif;
 }
@@ -13,7 +12,6 @@
     font-weight: 700;
 }
 
-/* Color Palette - Based on linkpro.ma */
 .text-blue-custom {
     color: #312783 !important;
 }
@@ -34,12 +32,10 @@
     background: linear-gradient(45deg, #312783, #E23216);
 }
 
-/* Border Radius - Following linkpro.ma pattern */
 .radius-custom {
     border-radius: 20px;
 }
 
-/* Animation and Transition Effects */
 @keyframes fadeInUp {
     from { 
         transform: translateY(50px); 
@@ -73,7 +69,6 @@
     }
 }
 
-/* Fade-in Animation Classes */
 .fade-in-up {
     opacity: 0;
     transform: translateY(50px);
@@ -85,7 +80,6 @@
     transform: translateY(0);
 }
 
-/* Button Animation - Following linkpro.ma patterns */
 .btn-animation {
     transition: color 0.5s ease, transform 0.5s ease, background-color 0.3s ease;
 }
@@ -94,7 +88,6 @@
     transform: scale(1.1);
 }
 
-/* Custom Button Styles */
 .btn-primary-custom {
     background: linear-gradient(45deg, #312783, #4338ca);
     border: none;
@@ -128,7 +121,6 @@
     transform: scale(1.05);
 }
 
-/* Stat Cards - Enhanced hover effects */
 .stat-card {
     transition: all 0.3s ease;
     transform: translateY(0);
@@ -144,7 +136,6 @@
     transition: color 0.3s ease;
 }
 
-/* Link Hover Effects */
 .link-hover {
     transition: color 0.3s ease, transform 0.3s ease;
 }
@@ -155,7 +146,6 @@
     font-weight: 600;
 }
 
-/* Loading Spinner */
 .spinner {
     border: 3px solid #f3f3f3;
     border-top: 3px solid #312783;
@@ -165,7 +155,6 @@
     animation: spin 1s linear infinite;
 }
 
-/* Pulse Effect for Live Indicator */
 .status-indicator {
     width: 12px;
     height: 12px;
@@ -174,7 +163,6 @@
     animation: pulse-custom 2s infinite;
 }
 
-/* Chart Containers - Fixed Sizing */
 .chart-container {
     position: relative;
     width: 100%;
@@ -189,7 +177,6 @@
     max-height: 300px;
 }
 
-/* Custom Card Styling */
 .custom-card {
     background: white;
     border-radius: 20px;
@@ -197,14 +184,12 @@
     border: 1px solid rgba(49, 39, 131, 0.1);
 }
 
-/* Navigation Styling */
 .nav-custom {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     border-bottom: 2px solid #312783;
 }
 
-/* Select Dropdown Styling */
 .select-custom {
     border: 2px solid #312783;
     border-radius: 15px;
@@ -225,7 +210,6 @@
     transform: scale(1.02);
 }
 
-/* Table Styling */
 .table-custom {
     border-radius: 20px;
     overflow: hidden;
@@ -244,7 +228,6 @@
     background: rgba(49, 39, 131, 0.05);
 }
 
-/* Performance Badges */
 .badge-top {
     background: linear-gradient(45deg, #10b981, #059669);
     color: white;
@@ -265,7 +248,6 @@
     align-items: center;
 }
 
-/* Recommendation Section */
 .recommendation-gradient {
     background: linear-gradient(135deg, #312783 0%, #E23216 100%);
     border-radius: 20px;
@@ -273,7 +255,6 @@
     box-shadow: 0 8px 25px rgba(49, 39, 131, 0.3);
 }
 
-/* Error Toast Styling */
 .error-toast {
     background: linear-gradient(45deg, #ef4444, #dc2626);
     border-radius: 20px;
@@ -282,7 +263,6 @@
     backdrop-filter: blur(10px);
 }
 
-/* Success, Warning, Error States */
 .success-indicator {
     color: #10b981;
 }
@@ -295,7 +275,6 @@
     color: #ef4444;
 }
 
-/* Enhanced Button Interactions */
 button {
     transition: all 0.2s ease;
 }
@@ -308,14 +287,12 @@ button:active {
     transform: translateY(0);
 }
 
-/* Focus States for Accessibility */
 button:focus,
 select:focus {
     outline: 2px solid #312783;
     outline-offset: 2px;
 }
 
-/* Scrollbar Styling */
 ::-webkit-scrollbar {
     width: 8px;
 }
@@ -334,7 +311,6 @@ select:focus {
     background: linear-gradient(45deg, #E23216, #312783);
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .stat-card {
         margin-bottom: 1rem;
@@ -369,7 +345,6 @@ select:focus {
     }
 }
 
-/* Loading States */
 .loading-skeleton {
     background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
     background-size: 200% 100%;
@@ -381,7 +356,6 @@ select:focus {
     100% { background-position: -200% 0; }
 }
 
-/* Performance Indicators */
 .performance-excellent {
     background: linear-gradient(45deg, #dcfce7, #bbf7d0);
     color: #166534;
@@ -400,7 +374,6 @@ select:focus {
     border-radius: 15px;
 }
 
-/* Print Styles */
 @media print {
     .no-print {
         display: none !important;
@@ -417,7 +390,6 @@ select:focus {
     }
 }
 
-/* Additional Interactive Elements */
 .interactive-icon {
     transition: all 0.3s ease;
 }
@@ -427,7 +399,6 @@ select:focus {
     color: #E23216;
 }
 
-/* Card Depth and Shadows */
 .elevated-card {
     box-shadow: 
         0 4px 8px rgba(49, 39, 131, 0.1),

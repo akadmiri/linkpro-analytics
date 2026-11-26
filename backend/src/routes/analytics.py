@@ -27,17 +27,14 @@ async def get_profile_analytics(
     end_date: Optional[str] = Query(None, description="End date (YYYY-MM-DD)"),
     db: Session = Depends(get_db)
 ):
-    """Get complete analytics for a profile"""
-    # Verify profile exists
+    """Return profile totals and metrics for each link."""
     profile = db.query(LinkProfile).filter(LinkProfile.id == profile_id).first()
     if not profile:
         raise HTTPException(status_code=404, detail="Profile not found")
 
-    # Parse dates
     start_dt = parse_date(start_date) if start_date else None
     end_dt = parse_date(end_date) if end_date else None
 
-    # Get analytics
     analytics_service = AnalyticsService(db)
     return analytics_service.get_profile_analytics(
         profile_id=profile_id,
@@ -53,17 +50,14 @@ async def get_traffic_analytics(
     end_date: Optional[str] = Query(None, description="End date (YYYY-MM-DD)"),
     db: Session = Depends(get_db)
 ):
-    """Get traffic source analytics for a profile"""
-    # Verify profile exists
+    """Group profile events by referrer."""
     profile = db.query(LinkProfile).filter(LinkProfile.id == profile_id).first()
     if not profile:
         raise HTTPException(status_code=404, detail="Profile not found")
 
-    # Parse dates
     start_dt = parse_date(start_date) if start_date else None
     end_dt = parse_date(end_date) if end_date else None
 
-    # Get analytics
     analytics_service = AnalyticsService(db)
     return analytics_service.analyze_traffic_sources(
         profile_id=profile_id,
@@ -80,21 +74,17 @@ async def get_time_analytics(
     end_date: Optional[str] = Query(None, description="End date (YYYY-MM-DD)"),
     db: Session = Depends(get_db)
 ):
-    """Get time-based analytics for a profile"""
-    # Validate granularity
+    """Group profile events by hour or day."""
     if granularity not in ['hourly', 'daily']:
         raise HTTPException(status_code=400, detail="Granularity must be 'hourly' or 'daily'")
 
-    # Verify profile exists
     profile = db.query(LinkProfile).filter(LinkProfile.id == profile_id).first()
     if not profile:
         raise HTTPException(status_code=404, detail="Profile not found")
 
-    # Parse dates
     start_dt = parse_date(start_date) if start_date else None
     end_dt = parse_date(end_date) if end_date else None
 
-    # Get analytics
     analytics_service = AnalyticsService(db)
     return analytics_service.analyze_time_patterns(
         profile_id=profile_id,
@@ -110,27 +100,22 @@ async def get_quick_stats(
     days: int = Query(7, description="Number of days to analyze (default: 7)"),
     db: Session = Depends(get_db)
 ):
-    """Get quick stats for the last N days"""
-    # Verify profile exists
+    """Summarize the last N days."""
     profile = db.query(LinkProfile).filter(LinkProfile.id == profile_id).first()
     if not profile:
         raise HTTPException(status_code=404, detail="Profile not found")
 
-    # Calculate date range
     end_date = datetime.now()
     start_date = end_date - timedelta(days=days)
 
-    # Get analytics
     analytics_service = AnalyticsService(db)
 
-    # Get basic metrics
     metrics = analytics_service.calculate_basic_metrics(
         profile_id=profile_id,
         start_date=start_date,
         end_date=end_date
     )
 
-    # Get top performing link
     links_analytics = analytics_service.get_link_analytics(
         profile_id=profile_id,
         start_date=start_date,
@@ -170,8 +155,7 @@ async def compare_periods(
     previous_days: int = Query(7, description="Previous period days"),
     db: Session = Depends(get_db)
 ):
-    """Compare current period with previous period"""
-    # Verify profile exists
+    """Compare clicks, views, and CTR across two periods."""
     profile = db.query(LinkProfile).filter(LinkProfile.id == profile_id).first()
     if not profile:
         raise HTTPException(status_code=404, detail="Profile not found")
@@ -183,21 +167,18 @@ async def compare_periods(
 
     analytics_service = AnalyticsService(db)
 
-    # Get current period metrics
     current_metrics = analytics_service.calculate_basic_metrics(
         profile_id=profile_id,
         start_date=current_start,
         end_date=end_date
     )
 
-    # Get previous period metrics
     previous_metrics = analytics_service.calculate_basic_metrics(
         profile_id=profile_id,
         start_date=previous_start,
         end_date=previous_end
     )
 
-    # Calculate changes
     def calculate_change(current: int, previous: int) -> dict:
         if previous == 0:
             return {"absolute": current, "percentage": 100.0 if current > 0 else 0.0}

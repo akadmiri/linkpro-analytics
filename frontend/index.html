@@ -5,18 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="analytics-api-url" content="http://127.0.0.1:8000">
     <title>LinkPro Analytics Dashboard</title>
-    
-    <!-- External Dependencies -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap" rel="stylesheet">
-    
-    <!-- Custom Styles -->
     <link rel="stylesheet" href="dashboard.css">
 </head>
 <body class="bg-gray-50 min-h-screen">
-    <!-- Header -->
     <nav class="nav-custom shadow-lg fixed top-0 left-0 right-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
@@ -25,19 +20,19 @@
                </a>
                 <div class="flex items-center space-x-4">
                     <select id="profileSelector" class="select-custom">
-                         <option value="1">Profile ID: 1</option>
-                         <option value="2">Profile ID: 2</option>
-                         <option value="3">Profile ID: 3</option>
-                         <option value="4">Profile ID: 4</option>
-                         <option value="5">Profile ID: 5</option>
-                         <option value="6">Profile ID: 6</option>
-                         <option value="7">Profile ID: 7</option>
-                         <option value="8">Profile ID: 8</option>
-                         <option value="9">Profile ID: 9</option>
-                         <option value="10">Profile ID: 10</option>
-                         <option value="11">Profile ID: 11</option>
-                         <option value="12">Profile ID: 12</option>
-                         <option value="13">Profile ID: 13</option>
+                         <option value="1">Profile 1</option>
+                         <option value="2">Profile 2</option>
+                         <option value="3">Profile 3</option>
+                         <option value="4">Profile 4</option>
+                         <option value="5">Profile 5</option>
+                         <option value="6">Profile 6</option>
+                         <option value="7">Profile 7</option>
+                         <option value="8">Profile 8</option>
+                         <option value="9">Profile 9</option>
+                         <option value="10">Profile 10</option>
+                         <option value="11">Profile 11</option>
+                         <option value="12">Profile 12</option>
+                         <option value="13">Profile 13</option>
                      </select>
                     <button id="refreshBtn" class="btn-primary-custom btn-animation">
                         <i class="fas fa-sync-alt mr-2"></i>Refresh
@@ -46,10 +41,7 @@
             </div>
         </div>
     </nav>
-
-    <!-- Main Content -->
     <main class="pt-16">
-        <!-- Loading Indicator -->
         <div id="loadingIndicator" class="hidden fixed top-20 right-4 custom-card p-4 z-50">
             <div class="flex items-center">
                 <div class="spinner mr-3"></div>
@@ -58,18 +50,14 @@
         </div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <!-- Live Status Indicator -->
             <div class="mb-6 flex items-center fade-in-up">
                 <div class="flex items-center">
                     <div class="status-indicator mr-2"></div>
-                    <span class="text-sm text-blue-custom font-semibold">Live Data</span>
+                    <span class="text-sm text-blue-custom font-semibold">Profile analytics</span>
                 </div>
-                <span class="ml-4 text-sm text-gray-500" id="lastUpdate">Last updated: Never</span>
+                <span class="ml-4 text-sm text-gray-500" id="lastUpdate">Waiting for data</span>
             </div>
-
-            <!-- Quick Stats Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <!-- Total Clicks Card -->
                 <div class="stat-card custom-card p-6 fade-in-up">
                     <div class="flex items-center justify-between">
                         <div>
@@ -79,7 +67,7 @@
                                 <span id="clicksChange" class="text-green-600">
                                     <i class="fas fa-arrow-up"></i> 0%
                                 </span>
-                                <span class="text-gray-500">vs last period</span>
+                                <span class="text-gray-500">vs previous 7 days</span>
                             </p>
                         </div>
                         <div class="text-blue-custom">
@@ -87,8 +75,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Total Views Card -->
                 <div class="stat-card custom-card p-6 fade-in-up" style="animation-delay: 0.1s;">
                     <div class="flex items-center justify-between">
                         <div>
@@ -98,7 +84,7 @@
                                 <span id="viewsChange" class="text-green-600">
                                     <i class="fas fa-arrow-up"></i> 0%
                                 </span>
-                                <span class="text-gray-500">vs last period</span>
+                                <span class="text-gray-500">vs previous 7 days</span>
                             </p>
                         </div>
                         <div class="text-orange-custom">
@@ -106,18 +92,16 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- CTR Card -->
                 <div class="stat-card custom-card p-6 fade-in-up" style="animation-delay: 0.2s;">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text text-gray-600 mb-1">Click Rate (CTR)</p>
+                            <p class="text text-gray-600 mb-1">Click-through rate</p>
                             <p class="text-3xl title text-blue-custom" id="ctr">0%</p>
                             <p class="text text-sm mt-2">
                                 <span id="ctrChange" class="text-green-600">
                                     <i class="fas fa-arrow-up"></i> 0%
                                 </span>
-                                <span class="text-gray-500">vs last period</span>
+                                <span class="text-gray-500">vs previous 7 days</span>
                             </p>
                         </div>
                         <div class="text-green-600">
@@ -125,12 +109,10 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Unique Visitors Card -->
                 <div class="stat-card custom-card p-6 fade-in-up" style="animation-delay: 0.3s;">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text text-gray-600 mb-1">Unique Visitors</p>
+                            <p class="text text-gray-600 mb-1">Unique visitors</p>
                             <p class="text-3xl title text-orange-custom" id="uniqueVisitors">0</p>
                             <p class="text text-sm mt-2">
                                 <span class="text-gray-500">Last 7 days</span>
@@ -142,10 +124,7 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Charts Row -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                <!-- Traffic Sources Chart -->
                 <div class="custom-card p-6 fade-in-up" style="animation-delay: 0.4s;">
                     <h2 class="text-lg title text-blue-custom mb-4">
                         <i class="fas fa-globe mr-2"></i>
@@ -155,25 +134,21 @@
                         <canvas id="trafficChart"></canvas>
                     </div>
                 </div>
-
-                <!-- Time Series Chart -->
                 <div class="custom-card p-6 fade-in-up" style="animation-delay: 0.5s;">
                     <h2 class="text-lg title text-orange-custom mb-4">
                         <i class="fas fa-chart-line mr-2"></i>
-                        Daily Performance
+                        Daily clicks and views
                     </h2>
                     <div class="chart-container">
                         <canvas id="timeChart"></canvas>
                     </div>
                 </div>
             </div>
-
-            <!-- Links Performance Table -->
             <div class="custom-card mb-8 table-custom fade-in-up" style="animation-delay: 0.6s;">
                 <div class="px-6 py-4 bg-gradient-custom">
                     <h2 class="text-lg title text-white">
                         <i class="fas fa-link mr-2"></i>
-                        Links Performance
+                        Link performance
                     </h2>
                 </div>
                 <div class="overflow-x-auto">
@@ -184,31 +159,25 @@
                                 <th class="px-6 py-3 text-left text-xs title text-white uppercase tracking-wider">Link Title</th>
                                 <th class="px-6 py-3 text-left text-xs title text-white uppercase tracking-wider">Clicks</th>
                                 <th class="px-6 py-3 text-left text-xs title text-white uppercase tracking-wider">CTR</th>
-                                <th class="px-6 py-3 text-left text-xs title text-white uppercase tracking-wider">Trend</th>
+                                <th class="px-6 py-3 text-left text-xs title text-white uppercase tracking-wider">Status</th>
                             </tr>
                         </thead>
                         <tbody id="linksTableBody" class="bg-white divide-y divide-gray-200">
-                            <!-- Links will be populated here -->
                         </tbody>
                     </table>
                 </div>
             </div>
-
-            <!-- Best Time Recommendation -->
             <div class="recommendation-gradient shadow-lg p-6 text-white fade-in-up" style="animation-delay: 0.7s;">
                 <h2 class="text-xl title mb-2">
                     <i class="fas fa-lightbulb mr-2"></i>
-                    Optimization Tip
+                    Posting suggestion
                 </h2>
-                <p id="recommendationText" class="text text-lg">Loading recommendations...</p>
+                <p id="recommendationText" class="text text-lg">Loading posting suggestion...</p>
             </div>
         </div>
     </main>
-
-    <!-- Custom JavaScript -->
     <script src="dashboard.js"></script>
     <script>
-        // Initialize fade-in animations on page load
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
                 document.querySelectorAll('.fade-in-up').forEach(el => {

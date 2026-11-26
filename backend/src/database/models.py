@@ -12,7 +12,6 @@ class LinkProfile(Base):
     title = Column(String(100))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    # Relationships
     links = relationship("Link", back_populates="profile", cascade="all, delete-orphan")
     click_events = relationship("ClickEvent", back_populates="profile", cascade="all, delete-orphan")
     page_views = relationship("PageView", back_populates="profile", cascade="all, delete-orphan")
@@ -27,7 +26,6 @@ class Link(Base):
     position = Column(Integer, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    # Relationships
     profile = relationship("LinkProfile", back_populates="links")
     click_events = relationship("ClickEvent", back_populates="link", cascade="all, delete-orphan")
 
@@ -42,7 +40,6 @@ class ClickEvent(Base):
     user_agent = Column(Text)
     referrer = Column(Text)
 
-    # Relationships
     link = relationship("Link", back_populates="click_events")
     profile = relationship("LinkProfile", back_populates="click_events")
 
@@ -56,5 +53,4 @@ class PageView(Base):
     user_agent = Column(Text)
     referrer = Column(Text)
 
-    # Relationships
     profile = relationship("LinkProfile", back_populates="page_views")

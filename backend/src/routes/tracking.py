@@ -15,7 +15,7 @@ from models.click import (
 router = APIRouter(prefix="/api/track", tags=["tracking"])
 
 def get_client_ip(request: Request) -> str:
-    """Extract client IP address from request"""
+    """Read the client IP address."""
     forwarded = request.headers.get("X-Forwarded-For")
     if forwarded:
         return forwarded.split(",")[0].strip()
@@ -29,12 +29,11 @@ async def track_click_event(
     referrer: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
-    """Track a link click event"""
+    """Record a click on a link owned by the supplied profile."""
     link = db.query(Link).filter(Link.id == link_id, Link.profile_id == profile_id).first()
     if not link:
         raise HTTPException(status_code=404, detail="Link not found for this profile")
 
-    # Create click event
     click_data = ClickEventCreate(
         link_id=link_id,
         profile_id=profile_id,
@@ -43,7 +42,6 @@ async def track_click_event(
         referrer=referrer
     )
 
-    # Save to database
     db_click = ClickEvent(**click_data.model_dump())
     db.add(db_click)
     db.commit()
@@ -64,13 +62,11 @@ async def track_page_view(
     referrer: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
-    """Track a page view event"""
-    # Verify profile exists
+    """Record a page view for a profile."""
     profile = db.query(LinkProfile).filter(LinkProfile.id == profile_id).first()
     if not profile:
         raise HTTPException(status_code=404, detail="Profile not found")
 
-    # Create page view
     view_data = PageViewCreate(
         profile_id=profile_id,
         ip_address=get_client_ip(request),
@@ -78,7 +74,6 @@ async def track_page_view(
         referrer=referrer
     )
 
-    # Save to database
     db_view = PageView(**view_data.model_dump())
     db.add(db_view)
     db.commit()
@@ -97,7 +92,7 @@ async def get_link_clicks(
     link_id: int,
     db: Session = Depends(get_db)
 ):
-    """Get all clicks for a specific link"""
+    """List recorded clicks for a link."""
     clicks = db.query(ClickEvent).filter(ClickEvent.link_id == link_id).all()
     return {
         "link_id": link_id,
@@ -110,7 +105,7 @@ async def get_profile_views(
     profile_id: int,
     db: Session = Depends(get_db)
 ):
-    """Get all page views for a specific profile"""
+    """List recorded page views for a profile."""
     views = db.query(PageView).filter(PageView.profile_id == profile_id).all()
     return {
         "profile_id": profile_id,

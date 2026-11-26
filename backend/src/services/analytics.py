@@ -16,9 +16,8 @@ class AnalyticsService:
     def calculate_basic_metrics(self, profile_id: int, link_id: Optional[int] = None, 
                               start_date: Optional[datetime] = None, 
                               end_date: Optional[datetime] = None) -> BasicMetrics:
-        """Calculate basic metrics for profile or specific link"""
+        """Calculate event totals, unique IP counts, and CTR."""
         
-        # Build base queries
         click_query = self.db.query(ClickEvent).filter(ClickEvent.profile_id == profile_id)
         view_query = self.db.query(PageView).filter(PageView.profile_id == profile_id)
         
@@ -33,14 +32,12 @@ class AnalyticsService:
             click_query = click_query.filter(ClickEvent.clicked_at <= end_date)
             view_query = view_query.filter(PageView.viewed_at <= end_date)
         
-        # Calculate metrics
         total_clicks = click_query.count()
         total_views = view_query.count()
         
         unique_clicks = click_query.distinct(ClickEvent.ip_address).count()
         unique_views = view_query.distinct(PageView.ip_address).count()
         
-        # Calculate CTR (Click Through Rate)
         ctr = (total_clicks / total_views * 100) if total_views > 0 else 0.0
         
         return BasicMetrics(
@@ -53,7 +50,7 @@ class AnalyticsService:
     
     def get_link_analytics(self, profile_id: int, start_date: Optional[datetime] = None,
                           end_date: Optional[datetime] = None) -> List[LinkAnalytics]:
-        """Get analytics for all links in a profile"""
+        """Return link metrics in display order."""
         
         links = self.db.query(Link).filter(Link.profile_id == profile_id).all()
         analytics = []
@@ -75,27 +72,23 @@ class AnalyticsService:
                 created_at=link.created_at
             ))
         
-        # Sort by position
         analytics.sort(key=lambda x: x.position)
         return analytics
     
     def get_profile_analytics(self, profile_id: int, start_date: Optional[datetime] = None,
                             end_date: Optional[datetime] = None) -> ProfileAnalytics:
-        """Get complete analytics for a profile"""
+        """Return profile totals and metrics for each link."""
         
-        # Get profile info
         profile = self.db.query(LinkProfile).filter(LinkProfile.id == profile_id).first()
         if not profile:
             raise ValueError("Profile not found")
         
-        # Get overall metrics
         total_metrics = self.calculate_basic_metrics(
             profile_id=profile_id,
             start_date=start_date,
             end_date=end_date
         )
         
-        # Get link analytics
         links_analytics = self.get_link_analytics(
             profile_id=profile_id,
             start_date=start_date,
@@ -113,9 +106,8 @@ class AnalyticsService:
     
     def analyze_traffic_sources(self, profile_id: int, start_date: Optional[datetime] = None,
                                end_date: Optional[datetime] = None) -> TrafficAnalytics:
-        """Analyze traffic sources from referrer data"""
+        """Group clicks and views by referrer."""
         
-        # Build queries
         click_query = self.db.query(ClickEvent).filter(ClickEvent.profile_id == profile_id)
         view_query = self.db.query(PageView).filter(PageView.profile_id == profile_id)
         
@@ -127,11 +119,9 @@ class AnalyticsService:
             click_query = click_query.filter(ClickEvent.clicked_at <= end_date)
             view_query = view_query.filter(PageView.viewed_at <= end_date)
         
-        # Get all referrers
         clicks = click_query.all()
         views = view_query.all()
         
-        # Count by source
         source_data = {
             'instagram': {'clicks': 0, 'views': 0},
             'tiktok': {'clicks': 0, 'views': 0},
@@ -153,12 +143,10 @@ class AnalyticsService:
             else:
                 return 'other'
         
-        # Categorize clicks
         for click in clicks:
             source = categorize_referrer(click.referrer)
             source_data[source]['clicks'] += 1
         
-        # Categorize views
         for view in views:
             source = categorize_referrer(view.referrer)
             source_data[source]['views'] += 1
@@ -166,7 +154,6 @@ class AnalyticsService:
         total_clicks = sum(data['clicks'] for data in source_data.values())
         total_views = sum(data['views'] for data in source_data.values())
         
-        # Build response
         sources = []
         for source_name, data in source_data.items():
             if data['clicks'] > 0 or data['views'] > 0:
@@ -178,7 +165,6 @@ class AnalyticsService:
                     percentage=round(percentage, 2)
                 ))
         
-        # Sort by clicks descending
         sources.sort(key=lambda x: x.clicks, reverse=True)
         
         return TrafficAnalytics(
@@ -191,7 +177,7 @@ class AnalyticsService:
     def analyze_time_patterns(self, profile_id: int, granularity: str = 'daily',
                             start_date: Optional[datetime] = None,
                             end_date: Optional[datetime] = None) -> TimeAnalytics:
-        """Analyze time-based patterns in clicks and views"""
+        """Count events by time and find the peak by click count."""
         
         if not end_date:
             end_date = datetime.now()
@@ -199,7 +185,6 @@ class AnalyticsService:
             start_date = end_date - timedelta(days=30)
         
         if granularity == 'hourly':
-            # Group by hour
             click_data = self.db.query(
                 func.date_trunc('hour', ClickEvent.clicked_at).label('period'),
                 func.count(ClickEvent.id).label('clicks'),
@@ -247,12 +232,10 @@ class AnalyticsService:
                 )
             ).group_by('period').all()
         
-        # Combine data
         time_metrics = []
         click_dict = {str(row.period): {'clicks': row.clicks, 'unique': row.unique_visitors} for row in click_data}
         view_dict = {str(row.period): row.views for row in view_data}
         
-        # Get all periods
         all_periods = set(click_dict.keys()) | set(view_dict.keys())
         
         for period in sorted(all_periods):
@@ -266,13 +249,11 @@ class AnalyticsService:
                 unique_visitors=click_info['unique']
             ))
         
-        # Find peak times
         peak_hour = None
         peak_day = None
         best_time_recommendation = None
         
         if granularity == 'hourly' and time_metrics:
-            # Find peak hour
             hour_totals = {}
             for metric in time_metrics:
                 hour = datetime.fromisoformat(metric.period).hour
@@ -285,7 +266,6 @@ class AnalyticsService:
                 best_time_recommendation = f"Best posting time: {peak_hour}:00"
         
         elif granularity == 'daily' and time_metrics:
-            # Find peak day of week
             day_totals = {}
             for metric in time_metrics:
                 day_name = datetime.fromisoformat(metric.period).strftime('%A').lower()
