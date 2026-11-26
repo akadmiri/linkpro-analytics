@@ -1,3 +1,4 @@
+import logging
 import os
 from pathlib import Path
 
@@ -8,6 +9,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 load_dotenv(Path(__file__).resolve().parents[3] / ".env", interpolate=False)
+logger = logging.getLogger(__name__)
 
 engine = create_engine(
     URL.create(
@@ -36,5 +38,6 @@ def test_connection():
         with engine.connect() as connection:
             connection.execute(text("SELECT 1"))
         return True, "PostgreSQL is reachable"
-    except SQLAlchemyError:
+    except SQLAlchemyError as error:
+        logger.warning("PostgreSQL health check failed (%s)", type(error).__name__)
         return False, "PostgreSQL connection failed"

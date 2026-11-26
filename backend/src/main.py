@@ -1,7 +1,12 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from datetime import datetime
+import logging
+import os
 import sys
+from datetime import datetime
+from traceback import format_tb
+
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 # Import our database and models
 from database.connection import Base, engine, test_connection
@@ -9,6 +14,17 @@ from routes.tracking import router as tracking_router
 
 # Create analytics routes
 from routes.analytics import router as analytics_router
+
+logger = logging.getLogger(__name__)
+cors_origins = [
+    origin.strip()
+    for origin in os.getenv(
+        "CORS_ORIGINS", "http://127.0.0.1:8080,http://localhost:8080"
+    ).split(",")
+    if origin.strip()
+]
+if "*" in cors_origins:
+    raise ValueError("CORS_ORIGINS must list explicit origins")
 
 # Create all database tables
 Base.metadata.create_all(bind=engine)
@@ -21,13 +37,28 @@ app = FastAPI(
     docs_url="/docs"
 )
 
-# Enable CORS for frontend
+@app.middleware("http")
+async def handle_unexpected_errors(request: Request, call_next):
+    try:
+        return await call_next(request)
+    except Exception as error:
+        route = getattr(request.scope.get("route"), "path", "<unmatched>")
+        # Exception messages can contain database or request data.
+        logger.error(
+            "Unhandled %s on %s %s\n%s",
+            type(error).__name__,
+            request.method,
+            route,
+            "".join(format_tb(error.__traceback__)),
+        )
+        return JSONResponse(status_code=500, content={"detail": "Internal server error"})
+
+
+# Register CORS last so its headers also apply to error responses.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=cors_origins,
+    allow_methods=["GET", "POST"],
 )
 
 # Include routers
